@@ -5,9 +5,10 @@ var bodyParser = require('body-parser');
 
 var app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(bodyParser.json()); // support json encoded bodies
+app.use( bodyParser.json());       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
 
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -25,29 +26,20 @@ if(!err) {
 }
 });
 
-app.get("/userlist",function(req,res){
-	console.log('userlist');
-	var id = req.body.id;
-	res.send(id);
-});
-
 app.post("/saveUser",function(req,res){
 console.log('Server Starts')
- var post  = {User_ID: req.id, name: req.name,userName:req.username,email:req.email};
+ var post  = {User_ID:req.body.id, name: req.body.name,userName:req.body.username,email:req.body.email};
  console.log(post);
  var query = connection.query('INSERT INTO user SET ?', post, function(err, result) {
- res.send('sucess');
+ res.send(result);
  });
 });
 
 
-
-
-app.get("/userlist1",function(req,res){
-connection.query('SELECT * from employee', function(err, rows, fields) {
+app.get("/userlist",function(req,res){
+connection.query('SELECT * from user', function(err, rows, fields) {
 connection.end();
   if (!err){
-    // console.log('The solution is: ', fields);
     res.json(rows);
   }
   else{
